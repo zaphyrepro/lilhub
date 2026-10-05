@@ -1,40 +1,33 @@
 {
-  "name": "Your Name",
-  "description": "Add a short bio here, then swap these starter links for your own.",
-  "avatar": "/uploads/avatar-placeholder.svg",
+  "name": "RMB Solutions",
+  "title": "",
+  "description": "RMB Solutions helps manufacturers improve visibility, control, and profitability across service, aftermarket, rental, and equipment lifecycle operations. Our cloud-based platform streamlines field service, warranty management, repair operations, rental billing, dealer management, and recurring revenue processes while integrating directly with ERP and accounting systems. With over 20 years of experience, we help organizations reduce costs, improve operational efficiency, and turn service operations into strategic revenue drivers through hands-on implementation and long-term support.",
+  "avatar": "/uploads/avatar.png",
   "showAttribution": true,
   "theme": {
-    "primary": "#6366F1",
-    "secondary": "#4F46E5",
+    "primary": "#536ee5",
+    "secondary": "#536ee5",
     "background": "#FFFFFF",
     "text": "#1F2937"
   },
   "links": [
     {
-      "title": "My Website",
+      "title": "Field service management",
       "subtitle": "yourdomain.com",
-      "url": "https://example.com",
+      "url": "https://rmbsolutions.net/",
       "icon": "globe"
     },
     {
-      "title": "Instagram",
-      "subtitle": "@yourhandle",
-      "url": "https://instagram.com/yourhandle",
-      "icon": "instagram"
+      "title": "Youtube",
+      "subtitle": "",
+      "url": "https://www.youtube.com/@RMBSolutions/videos",
+      "icon": "link"
     },
     {
-      "title": "YouTube",
-      "subtitle": "Your channel",
-      "url": "https://youtube.com/@yourhandle",
-      "icon": "youtube"
-    },
-    {
-      "title": "Email me",
-      "subtitle": "you@yourdomain.com",
-      "url": "mailto:you@yourdomain.com",
-      "icon": "mail"
+      "title": "Linkedin:",
+      "subtitle": "",
+      "url": "https://www.linkedin.com/company/rmb-solutions",
+      "icon": "link"
     }
-  ],
-  "metaTitle": "",
-  "metaDescription": ""
+  ]
 }
