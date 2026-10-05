@@ -1,0 +1,25 @@
+---
+// "Made with heart by lilAgents" attribution. On by default; a deployed lilHub
+// owner can turn it off from their settings with no penalty (show={false}).
+interface Props {
+  show?: boolean;
+}
+const { show = true } = Astro.props;
+---
+
+{
+  show && (
+    <footer class="mt-12 pb-10 text-sm text-center text-muted-foreground">
+      <p>
+        Made with <span class="text-red-500">&#10084;&#65039;</span> by{" "}
+        <a
+          href="https://lilagents.com"
+          class="hover:underline hover:text-primary transition-colors"
+          target="_blank"
+        >
+          lilAgents
+        </a>
+      </p>
+    </footer>
+  )
+}

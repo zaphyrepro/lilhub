@@ -1,0 +1,61 @@
+# Build, redirects, and headers for your deployed lilHub.
+
+[build]
+  # Point the Sveltia CMS config at the deployer's own repo (reads Netlify's
+  # REPOSITORY_URL), then build the static site. The prebuild also runs via the
+  # package.json "build" script, so either entry point keeps them in sync.
+  command = "node scripts/set-cms-repo.mjs && astro build"
+  publish = "dist"
+
+[build.environment]
+  # Astro 7 requires Node >= 22.12. Pin here so Netlify installs the right
+  # version; package.json "engines" makes a wrong version fail fast.
+  NODE_VERSION = "22"
+
+# Catch-all 404 -- MUST be the last redirect. Serves the custom dist/404.html
+# (emitted by src/pages/404.astro) for any unmatched route.
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404
+
+# Security headers on every route.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# Immutable caching for hashed and static assets. Astro fingerprints files in
+# /_astro/, so a 1-year immutable cache is safe.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

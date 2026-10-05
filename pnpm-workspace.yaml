@@ -1,0 +1,9 @@
+# pnpm v11 blocks dependency build scripts by default, which makes the build
+# die with ERR_PNPM_IGNORED_BUILDS for esbuild and sharp. The package.json
+# pnpm.onlyBuiltDependencies field is ignored by pnpm v11, so we allow the
+# builds here instead.
+allowBuilds:
+  esbuild: true
+  sharp: true
+minimumReleaseAgeExclude:
+  - astro@7.2.0

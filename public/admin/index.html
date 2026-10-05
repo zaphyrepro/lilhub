@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <!--
+      Content-Security-Policy for the admin shell. Sveltia loads from unpkg and
+      talks to the GitHub API and the shared lilAgents auth broker, so those
+      origins are allowlisted here. Uploaded media and avatars can be any https
+      image.
+
+      font-src must include cdn.jsdelivr.net. Sveltia ships its typefaces through
+      Fontsource on jsdelivr, not Google Fonts, and one of them is Material
+      Symbols Outlined, the icon font for the entire admin UI. Block jsdelivr and
+      every icon in the CMS disappears while the app itself still loads and
+      reports no errors, which makes it look like the admin is broken rather than
+      blocked. fonts.gstatic.com stays allowed in case a future release moves
+      back to Google Fonts.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://api.github.com https://auth.lilhub.me https://lilhub-auth.lilagents.workers.dev; frame-src https://auth.lilhub.me https://lilhub-auth.lilagents.workers.dev;"
+    />
+    <title>Content Manager</title>
+  </head>
+  <body>
+    <!--
+      Sveltia CMS admin shell. This is a STATIC file in public/ on purpose, not
+      an Astro page: Astro processes <script> tags in .astro files and would
+      bundle this loader away, leaving /admin a blank page. Serving it statically
+      is the canonical Sveltia pattern (matches our other sites). The collection
+      config and GitHub sign-in (through the shared lilAgents auth broker) come
+      from /admin/config.yml.
+    -->
+    <!--
+      Pinned on purpose. Unpinned, this URL always served whatever Sveltia
+      shipped last, so an upstream change could reach every deployed lilHub with
+      no commit on our side. That is exactly how the admin icons broke: Sveltia
+      moved its typefaces to Fontsource on jsdelivr, our CSP did not allow that
+      origin, and every site lost its icons at once. Pinning makes an upgrade
+      something we choose. Bump the version deliberately, load /admin, and
+      confirm the icons and fonts still render before shipping the bump.
+    -->
+    <script src="https://unpkg.com/@sveltia/cms@0.174.0/dist/sveltia-cms.js"></script>
+  </body>
+</html>

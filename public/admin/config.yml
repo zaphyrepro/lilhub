@@ -1,0 +1,650 @@
+# Sveltia CMS configuration for your lilHub.
+#
+# Local development (no proxy server needed):
+#   1. Start Astro: pnpm dev
+#   2. Open http://localhost:4321/admin in a Chromium browser (Chrome, Edge,
+#      or Brave; Firefox and Safari are not supported).
+#   3. Click "Work with Local Repository" and pick this project's root folder.
+#   Sveltia uses the browser File System Access API to read and write your real
+#   files directly, so saves go straight to src/content/profile.json.
+#
+# Note: Sveltia ignores local_backend for its local workflow (the button above
+# is what triggers local editing). It is kept here so the same config behaves
+# for Decap-compatible tooling too.
+
+local_backend: true
+
+backend:
+  name: github
+  # The "Deploy to Netlify" build rewrites this to YOUR own repo automatically
+  # (scripts/set-cms-repo.mjs reads Netlify's REPOSITORY_URL at build time).
+  # Until then it is a placeholder; local editing uses local_backend above.
+  repo: owner/repo
+  branch: main
+  # Production GitHub sign-in goes through the shared lilAgents auth broker (a
+  # Cloudflare Worker on the team account, custom domain auth.lilhub.me). Every
+  # deployed lilHub points here.
+  base_url: https://auth.lilhub.me
+
+# Avatar and any other uploads land in public/uploads. media_folder is the
+# real on-disk path; public_folder is the URL the site serves them from.
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  - name: profile
+    label: Profile
+    # The preview pane just echoes the fields and adds little here, so turn it
+    # off for a cleaner, single-column editor.
+    editor:
+      preview: false
+    delete: false
+    files:
+      - name: profile
+        label: Profile
+        # Path is relative to the repo root and matches where the Astro page
+        # imports the data from (src/content/profile.json).
+        file: src/content/profile.json
+        fields:
+          - { name: name, label: Name, widget: string }
+          - name: description
+            label: Description
+            widget: markdown
+            minimal: true
+            buttons: [bold, italic, link]
+            editor_components: []
+          - { name: avatar, label: Profile Picture, widget: image }
+          - {
+              name: showAttribution,
+              label: "Show lilHub branding (footer and share image)",
+              widget: boolean,
+              default: true,
+              required: false,
+            }
+          - name: theme
+            label: Theme Colors
+            widget: object
+            fields:
+              - { name: primary, label: Primary Color, widget: string }
+              - { name: secondary, label: Secondary Color, widget: string }
+              - { name: background, label: Background Color, widget: string }
+              - { name: text, label: Text Color, widget: string }
+          - name: links
+            label: Links
+            widget: list
+            summary: "{{fields.title}}"
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: subtitle, label: Subtitle, widget: string, required: false }
+              - { name: url, label: URL, widget: string }
+              - name: icon
+                label: Icon
+                widget: select
+                # Generic glyphs map to Lucide, brand names to brand logos.
+                # Any value still renders via the forgiving resolver in
+                # src/components/Icon.astro (unknown names fall back to "link").
+                options:
+                  - 42-group
+                  - 500px
+                  - accessible-icon
+                  - accusoft
+                  - adn
+                  - adversal
+                  - affiliatetheme
+                  - airbnb
+                  - algolia
+                  - alipay
+                  - amazon
+                  - amazon-pay
+                  - amilia
+                  - android
+                  - angellist
+                  - angrycreative
+                  - angular
+                  - app-store
+                  - app-store-ios
+                  - apper
+                  - apple
+                  - apple-pay
+                  - artstation
+                  - asymmetrik
+                  - at-sign
+                  - atlassian
+                  - audible
+                  - autoprefixer
+                  - avianex
+                  - aviato
+                  - aws
+                  - bandcamp
+                  - battle-net
+                  - behance
+                  - bell
+                  - bilibili
+                  - bimobject
+                  - bitbucket
+                  - bitcoin
+                  - bity
+                  - black-tie
+                  - blackberry
+                  - blogger
+                  - blogger-b
+                  - bluesky
+                  - bluetooth
+                  - bluetooth-b
+                  - book-open
+                  - bookmark
+                  - bootstrap
+                  - bots
+                  - brave
+                  - brave-reverse
+                  - briefcase
+                  - btc
+                  - buffer
+                  - buromobelexperte
+                  - buy-n-large
+                  - buysellads
+                  - calendar
+                  - calendar-days
+                  - camera
+                  - canadian-maple-leaf
+                  - cc-amazon-pay
+                  - cc-amex
+                  - cc-apple-pay
+                  - cc-diners-club
+                  - cc-discover
+                  - cc-jcb
+                  - cc-mastercard
+                  - cc-paypal
+                  - cc-stripe
+                  - cc-visa
+                  - centercode
+                  - centos
+                  - chrome
+                  - chromecast
+                  - clock
+                  - cloudflare
+                  - cloudscale
+                  - cloudsmith
+                  - cloudversify
+                  - cmplid
+                  - code
+                  - codepen
+                  - codiepie
+                  - coffee
+                  - confluence
+                  - connectdevelop
+                  - contao
+                  - cotton-bureau
+                  - cpanel
+                  - creative-commons
+                  - creative-commons-by
+                  - creative-commons-nc
+                  - creative-commons-nc-eu
+                  - creative-commons-nc-jp
+                  - creative-commons-nd
+                  - creative-commons-pd
+                  - creative-commons-pd-alt
+                  - creative-commons-remix
+                  - creative-commons-sa
+                  - creative-commons-sampling
+                  - creative-commons-sampling-plus
+                  - creative-commons-share
+                  - creative-commons-zero
+                  - credit-card
+                  - critical-role
+                  - css
+                  - css3
+                  - css3-alt
+                  - cuttlefish
+                  - d-and-d
+                  - d-and-d-beyond
+                  - dailymotion
+                  - dart-lang
+                  - dashcube
+                  - debian
+                  - deezer
+                  - delicious
+                  - deploydog
+                  - deskpro
+                  - dev
+                  - deviantart
+                  - dhl
+                  - diaspora
+                  - digg
+                  - digital-ocean
+                  - discord
+                  - discourse
+                  - dochub
+                  - docker
+                  - download
+                  - draft2digital
+                  - dribbble
+                  - dropbox
+                  - drupal
+                  - dyalog
+                  - earlybirds
+                  - ebay
+                  - edge
+                  - edge-legacy
+                  - elementor
+                  - ello
+                  - ember
+                  - empire
+                  - envira
+                  - erlang
+                  - ethereum
+                  - etsy
+                  - evernote
+                  - expeditedssl
+                  - external-link
+                  - facebook
+                  - facebook-f
+                  - facebook-messenger
+                  - fantasy-flight-games
+                  - fedex
+                  - fedora
+                  - figma
+                  - file-text
+                  - files-pinwheel
+                  - firefox
+                  - firefox-browser
+                  - first-order
+                  - first-order-alt
+                  - firstdraft
+                  - flame
+                  - flickr
+                  - flipboard
+                  - flutter
+                  - fly
+                  - font-awesome
+                  - fonticons
+                  - fonticons-fi
+                  - fort-awesome
+                  - fort-awesome-alt
+                  - forumbee
+                  - foursquare
+                  - free-code-camp
+                  - freebsd
+                  - fulcrum
+                  - galactic-republic
+                  - galactic-senate
+                  - get-pocket
+                  - gg
+                  - gg-circle
+                  - gift
+                  - git
+                  - git-alt
+                  - github
+                  - github-alt
+                  - gitkraken
+                  - gitlab
+                  - gitter
+                  - glide
+                  - glide-g
+                  - globe
+                  - gofore
+                  - golang
+                  - goodreads
+                  - goodreads-g
+                  - google
+                  - google-drive
+                  - google-pay
+                  - google-play
+                  - google-plus
+                  - google-plus-g
+                  - google-scholar
+                  - google-wallet
+                  - graduation-cap
+                  - gratipay
+                  - grav
+                  - gripfire
+                  - grunt
+                  - guilded
+                  - gulp
+                  - hacker-news
+                  - hackerrank
+                  - hand-heart
+                  - hash
+                  - hashnode
+                  - headphones
+                  - heart
+                  - hips
+                  - hire-a-helper
+                  - hive
+                  - home
+                  - hooli
+                  - hornbill
+                  - hotjar
+                  - houzz
+                  - html5
+                  - hubspot
+                  - ideal
+                  - image
+                  - imdb
+                  - instagram
+                  - instalod
+                  - intercom
+                  - internet-explorer
+                  - invision
+                  - ioxhost
+                  - itch-io
+                  - itunes
+                  - itunes-note
+                  - java
+                  - jedi-order
+                  - jenkins
+                  - jira
+                  - joget
+                  - joomla
+                  - js
+                  - jsfiddle
+                  - jxl
+                  - kaggle
+                  - keybase
+                  - keycdn
+                  - kickstarter
+                  - kickstarter-k
+                  - korvue
+                  - laravel
+                  - lastfm
+                  - leanpub
+                  - less
+                  - letterboxd
+                  - line
+                  - link
+                  - linkedin
+                  - linkedin-in
+                  - linode
+                  - linux
+                  - lyft
+                  - magento
+                  - mail
+                  - mailchimp
+                  - mandalorian
+                  - map
+                  - map-pin
+                  - markdown
+                  - mastodon
+                  - maxcdn
+                  - mdb
+                  - medapps
+                  - medium
+                  - medrt
+                  - meetup
+                  - megaport
+                  - mendeley
+                  - message-circle
+                  - meta
+                  - mic
+                  - microblog
+                  - microsoft
+                  - mintbit
+                  - mix
+                  - mixcloud
+                  - mixer
+                  - mizuni
+                  - modx
+                  - monero
+                  - monitor
+                  - music
+                  - napster
+                  - navigation
+                  - neos
+                  - newspaper
+                  - nfc-directional
+                  - nfc-symbol
+                  - nimblr
+                  - node
+                  - node-js
+                  - npm
+                  - ns8
+                  - nutritionix
+                  - octopus-deploy
+                  - odnoklassniki
+                  - odysee
+                  - old-republic
+                  - opencart
+                  - openid
+                  - opensuse
+                  - opera
+                  - optin-monster
+                  - orcid
+                  - osi
+                  - padlet
+                  - page4
+                  - pagelines
+                  - palfed
+                  - patreon
+                  - paypal
+                  - pen-tool
+                  - perbyte
+                  - periscope
+                  - phabricator
+                  - phoenix-framework
+                  - phoenix-squadron
+                  - phone
+                  - php
+                  - pied-piper
+                  - pied-piper-alt
+                  - pied-piper-hat
+                  - pied-piper-pp
+                  - pinterest
+                  - pinterest-p
+                  - pix
+                  - pixiv
+                  - play
+                  - playstation
+                  - podcast
+                  - product-hunt
+                  - pushed
+                  - python
+                  - qq
+                  - quinscape
+                  - quora
+                  - r-project
+                  - raspberry-pi
+                  - ravelry
+                  - react
+                  - reacteurope
+                  - readme
+                  - rebel
+                  - red-river
+                  - reddit
+                  - reddit-alien
+                  - redhat
+                  - renren
+                  - replyd
+                  - researchgate
+                  - resolving
+                  - rev
+                  - rocketchat
+                  - rockrms
+                  - rss
+                  - rust
+                  - safari
+                  - salesforce
+                  - sass
+                  - schlix
+                  - screenpal
+                  - scribd
+                  - searchengin
+                  - sellcast
+                  - sellsy
+                  - send
+                  - servicestack
+                  - share-2
+                  - shirtsinbulk
+                  - shoelace
+                  - shopify
+                  - shopping-bag
+                  - shopping-cart
+                  - shopware
+                  - signal-messenger
+                  - simplybuilt
+                  - sistrix
+                  - sith
+                  - sitrox
+                  - sketch
+                  - skyatlas
+                  - skype
+                  - slack
+                  - slideshare
+                  - smartphone
+                  - snapchat
+                  - soundcloud
+                  - sourcetree
+                  - space-awesome
+                  - sparkles
+                  - speakap
+                  - speaker-deck
+                  - spotify
+                  - square-behance
+                  - square-bluesky
+                  - square-dribbble
+                  - square-facebook
+                  - square-font-awesome
+                  - square-font-awesome-stroke
+                  - square-git
+                  - square-github
+                  - square-gitlab
+                  - square-google-plus
+                  - square-hacker-news
+                  - square-instagram
+                  - square-js
+                  - square-lastfm
+                  - square-letterboxd
+                  - square-odnoklassniki
+                  - square-pied-piper
+                  - square-pinterest
+                  - square-reddit
+                  - square-snapchat
+                  - square-steam
+                  - square-threads
+                  - square-tumblr
+                  - square-twitter
+                  - square-upwork
+                  - square-viadeo
+                  - square-vimeo
+                  - square-web-awesome
+                  - square-web-awesome-stroke
+                  - square-whatsapp
+                  - square-x-twitter
+                  - square-xing
+                  - square-youtube
+                  - squarespace
+                  - stack-exchange
+                  - stack-overflow
+                  - stackpath
+                  - star
+                  - staylinked
+                  - steam
+                  - steam-symbol
+                  - sticker-mule
+                  - store
+                  - strava
+                  - stripe
+                  - stripe-s
+                  - stubber
+                  - studiovinari
+                  - stumbleupon
+                  - stumbleupon-circle
+                  - superpowers
+                  - supple
+                  - suse
+                  - swift
+                  - symfony
+                  - tag
+                  - teamspeak
+                  - telegram
+                  - tencent-weibo
+                  - terminal
+                  - the-red-yeti
+                  - themeco
+                  - themeisle
+                  - think-peaks
+                  - threads
+                  - tiktok
+                  - trade-federation
+                  - trello
+                  - trophy
+                  - tumblr
+                  - twitch
+                  - twitter
+                  - typo3
+                  - uber
+                  - ubuntu
+                  - uikit
+                  - umbraco
+                  - uncharted
+                  - uniregistry
+                  - unity
+                  - unsplash
+                  - untappd
+                  - ups
+                  - upwork
+                  - usb
+                  - user
+                  - users
+                  - usps
+                  - ussunnah
+                  - vaadin
+                  - viacoin
+                  - viadeo
+                  - viber
+                  - video
+                  - vimeo
+                  - vimeo-v
+                  - vine
+                  - vk
+                  - vnv
+                  - vuejs
+                  - wallet
+                  - watchman-monitoring
+                  - waze
+                  - web-awesome
+                  - webflow
+                  - weebly
+                  - weibo
+                  - weixin
+                  - whatsapp
+                  - whmcs
+                  - wikipedia-w
+                  - windows
+                  - wirsindhandwerk
+                  - wix
+                  - wizards-of-the-coast
+                  - wodu
+                  - wolf-pack-battalion
+                  - wordpress
+                  - wordpress-simple
+                  - wpbeginner
+                  - wpexplorer
+                  - wpforms
+                  - wpressr
+                  - x-twitter
+                  - xbox
+                  - xing
+                  - y-combinator
+                  - yahoo
+                  - yammer
+                  - yandex
+                  - yandex-international
+                  - yarn
+                  - yelp
+                  - yoast
+                  - youtube
+                  - zap
+                  - zhihu
+          - { name: metaTitle, label: "Meta Title (leave blank to use your name + lilHub)", widget: string, required: false }
+          - { name: metaDescription, label: "Meta Description (leave blank to use your bio above)", widget: text, required: false }
+          - name: verified
+            label: "Verified badge (optional)"
+            widget: object
+            required: false
+            collapsed: true
+            summary: "Show a verified checkmark next to your name"
+            fields:
+              - { name: provider, label: "Provider", widget: select, options: ["realhandles", "keybase", "other"], default: "realhandles", required: false }
+              - { name: handle, label: "RealHandles username (only for the RealHandles provider)", widget: string, required: false }
+              - { name: url, label: "Profile URL (only for Keybase / other providers)", widget: string, required: false }
+              - { name: label, label: "Provider name shown in the tooltip (only for 'other')", widget: string, required: false }

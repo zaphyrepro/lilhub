@@ -1,0 +1,181 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
+import LinkCard from "../components/LinkCard.astro";
+import Footer from "../components/Footer.astro";
+import { bioToHtml, bioToPlain } from "../lib/bio.ts";
+import { resolveVerified } from "../lib/verified.ts";
+import profile from "../content/profile.json";
+
+// This is the linktree itself: the page each lilHub owner publishes. It reads
+// the single source of truth (src/content/profile.json, edited at /admin) and
+// renders the avatar, name, bio, and link cards. The brand color in
+// profile.theme.primary drives the whole palette via Layout's injectTheme.
+
+interface Link {
+  title: string;
+  subtitle?: string;
+  url: string;
+  icon?: string;
+}
+
+const name = (profile.name || "Your Name").trim();
+const description = (profile.description || "").trim();
+const primary =
+  (profile as { theme?: { primary?: string } }).theme?.primary || "#536ee5";
+
+// Self-contained monogram avatar (filled circle in the brand color + white
+// initial), used when there is no real photo. Mirrors the /create preview so a
+// freshly deployed page shows the same picture the builder showed, and updates
+// automatically if the name or color changes in /admin.
+function monogramAvatar(n: string, hex: string): string {
+  const letter = (n.trim()[0] || "?").toUpperCase();
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">` +
+    `<circle cx="40" cy="40" r="40" fill="${hex}"/>` +
+    `<text x="40" y="40" dy="0.35em" text-anchor="middle" ` +
+    `font-family="Poppins, ui-sans-serif, system-ui, sans-serif" ` +
+    `font-size="40" font-weight="600" fill="#ffffff">${letter}</text></svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+const rawAvatar = (profile.avatar || "").trim();
+const avatar =
+  !rawAvatar || rawAvatar === "/uploads/avatar-placeholder.svg"
+    ? monogramAvatar(name, primary)
+    : rawAvatar;
+const showAttribution = profile.showAttribution !== false;
+const links = (profile.links ?? []).filter((l: Link) => l && l.url) as Link[];
+
+// SEO title + description. Default the title to "Name | lilHub" and the
+// description to the owner's bio, but let either be overridden from /admin
+// (the Meta Title / Meta Description fields) when they want full control.
+const metaTitle =
+  ((profile as { metaTitle?: string }).metaTitle || "").trim() ||
+  `${name} | lilHub`;
+const metaDescription =
+  ((profile as { metaDescription?: string }).metaDescription || "").trim() ||
+  bioToPlain(description) ||
+  `${name} on lilHub`;
+
+// Optional verified badge (defaults to RealHandles). For RealHandles the badge
+// is confirmed at runtime against the mutual rel="me" link (see verified.ts and
+// the script at the bottom of this file); a build-time "handle exists" check
+// would be spoofable, so we never rely on one.
+const verified = resolveVerified(profile as Record<string, unknown>);
+---
+
+<Layout title={metaTitle} description={metaDescription} ogImage="/og.png">
+  <div
+    class="min-h-screen flex flex-col items-center justify-center py-8 px-4 bg-background text-foreground"
+  >
+    <ThemeToggle />
+
+    <main class="w-full max-w-md mx-auto flex flex-col items-center">
+      <header class="flex flex-col items-center">
+        <img
+          src={avatar}
+          alt={`${name} profile photo`}
+          class="w-20 h-20 object-cover rounded-full mb-4"
+          width="80"
+          height="80"
+        />
+
+        <div class="flex items-center gap-1.5 mb-1">
+          <h1 class="text-2xl font-semibold text-foreground">{name}</h1>
+          {
+            verified && (
+              <a
+                id="rh-badge"
+                href={verified.url}
+                rel="me"
+                target="_blank"
+                title={verified.label}
+                aria-label={verified.label}
+                data-rh-live={verified.live ? "1" : undefined}
+                hidden={verified.live}
+                class="text-primary hover:opacity-75 transition-opacity shrink-0"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+              </a>
+            )
+          }
+        </div>
+
+        {
+          description && (
+            <p
+              class="text-sm text-center text-muted-foreground max-w-xs mb-4"
+              set:html={bioToHtml(description)}
+            />
+          )
+        }
+      </header>
+
+      <div class="w-full space-y-3 mt-2">
+        {
+          links.map((link) => (
+            <LinkCard
+              title={link.title}
+              subtitle={link.subtitle}
+              url={link.url}
+              icon={link.icon}
+            />
+          ))
+        }
+      </div>
+
+    </main>
+
+    <Footer show={showAttribution} />
+  </div>
+
+  <script is:inline>
+    // Reveal the RealHandles badge only when the mutual link is real.
+    //
+    // The badge markup ships hidden with a rel="me" link to the claimed
+    // RealHandles profile. That outbound link lets RealHandles confirm this page
+    // (it fetches the page and looks for the backlink). Here we ask the other
+    // half: is THIS page URL a confirmed account on that RealHandles identity?
+    // The public link-status API answers yes only for a mutually linked, non
+    // self-attested account, so a page that merely links out to someone else's
+    // handle never lights up. We reveal the badge and point it at the profile
+    // the API returns (authoritative), rather than trusting profile.json.
+    (function () {
+      var badge = document.getElementById("rh-badge");
+      if (!badge || badge.getAttribute("data-rh-live") !== "1") return;
+
+      // Candidate URLs for this page, most specific first, de-duplicated. The
+      // owner registers one of these on RealHandles; the API normalizes case and
+      // trailing slashes, so we just strip the query/hash.
+      var loc = window.location;
+      var here = (loc.origin + loc.pathname).replace(/\/+$/, "") || loc.origin;
+      var candidates = here === loc.origin ? [here] : [here, loc.origin];
+
+      function check(i) {
+        if (i >= candidates.length) return;
+        var api =
+          "https://realhandles.com/api/link-status?url=" +
+          encodeURIComponent(candidates[i]);
+        fetch(api, { headers: { Accept: "application/json" } })
+          .then(function (r) {
+            return r.ok ? r.json() : null;
+          })
+          .then(function (data) {
+            if (data && data.linked && data.profile) {
+              badge.href = data.profile;
+              badge.removeAttribute("hidden");
+              return;
+            }
+            check(i + 1);
+          })
+          .catch(function () {
+            check(i + 1);
+          });
+      }
+      check(0);
+    })();
+  </script>
+</Layout>

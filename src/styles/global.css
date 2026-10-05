@@ -1,0 +1,96 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light Mode */
+  --background: 0 0% 100%;
+  --foreground: 222.2 47.4% 11.2%;
+
+  --muted: 240 10% 96%;
+  --muted-foreground: 240 10% 50%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 47.4% 11.2%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 47.4% 11.2%;
+
+  --border: 240 10% 90%;
+  --input: 240 10% 90%;
+
+  --primary: 235 75% 62%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 235 20% 85%;
+  --secondary-foreground: 235 30% 20%;
+
+  --accent: 235 45% 85%;
+  --accent-foreground: 235 30% 25%;
+
+  --ring: 235 75% 62%;
+
+  --radius: 0.5rem;
+}
+
+.dark {
+  /* Dark Mode - Deeper background with more #536ee5 influence */
+  --background: 232 23% 9%;
+  --foreground: 235 10% 92%;
+
+  --muted: 232 20% 15%;
+  --muted-foreground: 235 8% 65%;
+
+  --popover: 232 20% 12%;
+  --popover-foreground: 235 10% 92%;
+
+  --card: 232 22% 11%;
+  --card-foreground: 235 10% 92%;
+
+  --border: 232 18% 22%;
+  --input: 232 18% 22%;
+
+  --primary: 235 75% 62%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 232 18% 22%;
+  --secondary-foreground: 235 10% 92%;
+
+  --accent: 235 55% 28%;
+  --accent-foreground: 235 10% 92%;
+
+  --ring: 235 75% 62%;
+}
+
+@layer base {
+  /* Always reserve the scrollbar track so pages of different heights don't
+     shift content horizontally between navigations (playbook §9.1). */
+  html {
+    overflow-y: scroll;
+  }
+
+  * {
+    @apply border-border;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "Poppins", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold;
+  }
+}
